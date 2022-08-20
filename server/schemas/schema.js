@@ -1,10 +1,8 @@
-const {projects, customers} = require('../sampleData.js');
-
 //mongoose models. 
 const Project = require('../models/Project');
 const Customer = require('../models/Customer');
 
-const {GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLList} = require('graphql');
+const {GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLList, GraphQLNonNull} = require('graphql');
 
 //Customer Schema. 
 const CustomerSchema = new GraphQLObjectType({
@@ -80,7 +78,34 @@ const RootQuery = new GraphQLObjectType({
     }
 })
 
+//***MUTATIONS****
+
+// Customer Mutation.
+const customerMutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addCustomer: {
+            type: CustomerSchema,
+            args: {
+                //using the GraphQL 'Non-Null' methode to make these fields required. 
+                name: {type: GraphQLNonNull(GraphQLString)},
+                email: {type: GraphQLNonNull(GraphQLString)},
+                phone: {type: GraphQLNonNull(GraphQLString)},
+            },
+            resolve(parent, args) {
+                const customer = new Customer({
+                    name: args.name,
+                    email: args.email,
+                    phone: args.phone,
+                });
+
+                return customer.save();
+            },
+        },
+    },
+});
 
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: customerMutation,
 })
