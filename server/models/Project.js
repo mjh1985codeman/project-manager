@@ -10,7 +10,7 @@ const ProjectMongooseSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Initial-Quote', 'In-Progress', 'Complete', 'Cancelled', 'Delayed']
+        enum: ['Potential','Quote-Delivered', 'In-Progress', 'Complete', 'Cancelled', 'Delayed']
     },
     customerId: {
         type: mongoose.Schema.Types.ObjectId,

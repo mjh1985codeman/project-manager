@@ -2,7 +2,7 @@
 const Project = require('../models/Project');
 const Customer = require('../models/Customer');
 
-const {GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLList, GraphQLNonNull} = require('graphql');
+const {GraphQLObjectType, GraphQLString, GraphQLID, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLEnumType} = require('graphql');
 
 //Customer Schema. 
 const CustomerSchema = new GraphQLObjectType({
@@ -28,7 +28,7 @@ const ProjectSchema = new GraphQLObjectType({
             resolve(parent, args) {
                 //the parent in this instance is the project so when the project query is called
                 //it will also return the customer via the customerId that matches w/ the project.
-                return customer.findById(parent.customerId);
+                return Customer.findById(parent.customerId);
             }
         }
     })
@@ -84,6 +84,7 @@ const RootQuery = new GraphQLObjectType({
 const customerMutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
+        //Adding a Customer.
         addCustomer: {
             type: CustomerSchema,
             args: {
@@ -102,7 +103,99 @@ const customerMutation = new GraphQLObjectType({
                 return customer.save();
             },
         },
-    },
+        //Deleting a Customer. 
+        deleteCustomer: {
+            type: CustomerSchema,
+            args: {
+                id: {type: GraphQLNonNull(GraphQLID)},
+            },
+            resolve(parent, args) {
+                return Customer.findByIdAndRemove(args.id);
+            },
+        },
+        //Adding a Project. 
+        addProject: {
+            type: ProjectSchema,
+            args: {
+                name: {type: GraphQLNonNull(GraphQLString)},
+                description: {type: GraphQLNonNull(GraphQLString)},
+                status: {
+                    type: new GraphQLEnumType({
+                        name: 'ProjectStatus',
+                        values: {
+                            //the value is based on the Model.
+                            'new': {value: 'Potential'},
+                            'quote': {value: 'Quote-Delivered'},
+                            'progress': {value: 'In-Progress'},
+                            'complete': {value: 'Complete'},
+                            'cancelled': {value: 'Cancelled'},
+                            'delayed': {value: 'Delayed'},
+                        }
+                    })
+                },
+                customerId: {type: GraphQLNonNull(GraphQLID)},
+            },
+            //Adding a Project Resolver.
+            resolve(parent, args) {
+                const project = new Project({
+                    name: args.name,
+                    description: args.description,
+                    status: args.status,
+                    customerId: args.customerId,
+                });
+                return project.save();
+            }
+        },
+        //Deleting a Project.
+        deleteProject: {
+            type: ProjectSchema,
+            args: {
+                id: {type: GraphQLNonNull(GraphQLID)},
+            },
+            resolve(parent, args) {
+                return Project.findByIdAndRemove(args.id);
+            }
+        },
+        //Updating a Project.
+        updateProject: {
+            type: ProjectSchema,
+            args: {
+                id: {type: GraphQLNonNull(GraphQLID)},
+                name: {type: GraphQLString},
+                description: {type: GraphQLString},
+                status: {
+                    type: new GraphQLEnumType({
+                        //the name must be unique. 
+                        name: 'UpdateProjectStatus',
+                        values: {
+                            //the value is based on the Model.
+                            'new': {value: 'Potential'},
+                            'quote': {value: 'Quote-Delivered'},
+                            'progress': {value: 'In-Progress'},
+                            'complete': {value: 'Complete'},
+                            'cancelled': {value: 'Cancelled'},
+                            'delayed': {value: 'Delayed'},
+                        }
+                    })
+                },
+            },
+            resolve(parent, args) {
+                return Project.findByIdAndUpdate(
+                    args.id,
+                    {
+                        $set: {
+                            name: args.name,
+                            description: args.description,
+                            status: args.status,
+                        }
+                    },
+                    //All this is doing is basically saying if the project is not there
+                    //then it will create it.  
+                    {new: true}
+                );
+            }
+        }
+    }, 
 });
 
 module.exports = new GraphQLSchema({
