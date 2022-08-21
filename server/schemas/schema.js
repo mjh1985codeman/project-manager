@@ -34,7 +34,8 @@ const ProjectSchema = new GraphQLObjectType({
     })
 })
 
-//ROOT QUERY STUFF
+//**QUERIES**//
+
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
@@ -46,7 +47,7 @@ const RootQuery = new GraphQLObjectType({
                 return Customer.find();
             }
         },
-        //To Fetch a customer.
+        //To Fetch an individual customer by id.
         customer: {
             type: CustomerSchema,
             args: {id: {type: GraphQLID}},
@@ -63,7 +64,7 @@ const RootQuery = new GraphQLObjectType({
             return Project.find();
           }
         },
-        //To Fetch a Project by Id. 
+        //To Fetch an individual Project by Id. 
         project: {
             type: ProjectSchema,
             args: {id: {type: GraphQLID}},
@@ -81,7 +82,7 @@ const RootQuery = new GraphQLObjectType({
 //***MUTATIONS****
 
 // Customer Mutation.
-const customerMutation = new GraphQLObjectType({
+const RootMutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
         //Adding a Customer.
@@ -121,6 +122,7 @@ const customerMutation = new GraphQLObjectType({
                 description: {type: GraphQLNonNull(GraphQLString)},
                 status: {
                     type: new GraphQLEnumType({
+                        //the name must be unique from one ENUM type to another.
                         name: 'ProjectStatus',
                         values: {
                             //the value is based on the Model.
@@ -165,7 +167,7 @@ const customerMutation = new GraphQLObjectType({
                 description: {type: GraphQLString},
                 status: {
                     type: new GraphQLEnumType({
-                        //the name must be unique. 
+                        //the name must be unique from one ENUM type to another.
                         name: 'UpdateProjectStatus',
                         values: {
                             //the value is based on the Model.
@@ -200,5 +202,5 @@ const customerMutation = new GraphQLObjectType({
 
 module.exports = new GraphQLSchema({
     query: RootQuery,
-    mutation: customerMutation,
+    mutation: RootMutation,
 })
