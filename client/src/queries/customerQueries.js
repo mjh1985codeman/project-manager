@@ -12,4 +12,5 @@ query getCustomers {
 `
 ;
 
+
 export {GET_CUSTOMERS};

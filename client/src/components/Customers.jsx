@@ -1,11 +1,13 @@
 import { GET_CUSTOMERS } from '../queries/customerQueries';
 import { useQuery } from '@apollo/client';
 import ClientRow from './ClientRow';
+import Spinner from './Spinner'
 
 export default function Customers() {
-    const { loading, error, data } = useQuery(GET_CUSTOMERS)
+    //You have to use these naming conventions (loading, error and data) via the apollo/client.  
+    const { loading, error, data } = useQuery(GET_CUSTOMERS);
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <Spinner />;
     if (error) return <p>Something went wrong.</p>
     return (
         <>
