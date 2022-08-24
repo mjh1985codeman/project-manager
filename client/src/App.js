@@ -1,5 +1,6 @@
 import Header from './components/Header';
 import Customers from './components/Customers';
+import AddCustomerModal from './components/AddCustomerModal';
 import {ApolloProvider, ApolloClient, InMemoryCache} from '@apollo/client';
 
 //This part is to get rid of the warning when using the ApolloCache query features of ApolloClient. 
@@ -33,6 +34,7 @@ function App() {
     <ApolloProvider client={client}>
     <Header />
     <div className="container">
+     <AddCustomerModal />
      <Customers />
     </div>
     </ApolloProvider>
