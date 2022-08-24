@@ -1,15 +1,38 @@
 import { useState } from 'react';
 import { FaUserPlus } from 'react-icons/fa';
-//import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { ADD_CUSTOMER } from '../mutations/customerMutations';
+import { GET_CUSTOMERS } from '../queries/customerQueries';
 
 export default function AddCustomerModal() {
     const [name, setName] = useState('') //Creating a react-state function called 'setName'
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
 
+    //Using the addCustomer Mutation here which is defined in the mutations file.. 
+    const [addCustomer] = useMutation(ADD_CUSTOMER, {
+        variables: { name, email, phone },
+        update(cache, { data: { addCustomer } }) {
+            const { customers } = cache.readQuery({
+                query: GET_CUSTOMERS
+            });
+            cache.writeQuery({
+                query: GET_CUSTOMERS,
+                data: { customers: [...customers, addCustomer] }
+            })
+        }
+    })
+
     const onSubmit = (e) => {
         e.preventDefault();
-        console.log(name, email, phone);
+        if (name === '' || email === '' || phone === '') {
+            return alert('Please Complete All Fields.');
+        }
+        addCustomer(name, email, phone);
+        setName('');
+        setEmail('');
+        setPhone('');
+        //This is here so that the Modal closes upon the form being submitted. 
         document.getElementById("addCustomerModal").classList.remove("show", "d-block");
         document.querySelectorAll(".modal-backdrop")
             .forEach(el => el.classList.remove("modal-backdrop"));
