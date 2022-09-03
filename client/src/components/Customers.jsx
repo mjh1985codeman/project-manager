@@ -1,6 +1,6 @@
 import { GET_CUSTOMERS } from '../queries/customerQueries';
 import { useQuery } from '@apollo/client';
-import ClientRow from './ClientRow';
+import CustomerRow from './CustomerRow';
 import Spinner from './Spinner'
 
 export default function Customers() {
@@ -23,7 +23,7 @@ export default function Customers() {
                     </thead>
                     <tbody>
                         {data.customers.map(customer => (
-                            <ClientRow key={customer.id} customer={customer} />
+                            <CustomerRow key={customer.id} customer={customer} />
                         ))}
                     </tbody>
                 </table>
