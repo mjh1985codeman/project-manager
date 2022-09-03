@@ -1,14 +1,22 @@
 import {gql} from '@apollo/client';
 
+//Note on the ADD_PROJECT the $status is referencing the enum NAME called ProjectStatus
+//referenced in the server directory schema.js file in the addProject mutation schema.  
 const ADD_PROJECT = gql`
-mutation addProject($name: String!, $description: String!, $status: String!){
-    addCustomer(name: $name, email: $email, phone: $phone)
-    {
-        id
-        name
-        email
-        phone
-    }
+mutation AddProject($name: String!, $description: String!, $status: ProjectStatus! $customerId: ID!) {
+    addProject(name: $name, description: $description, 
+        status: $status, customerId: $customerId) {
+            id
+            name
+            description
+            status
+            customer {
+                id
+                name
+                email
+                phone
+            }
+        }
 }
 `
 
