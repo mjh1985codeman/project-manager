@@ -21,14 +21,31 @@ mutation AddProject($name: String!, $description: String!, $status: ProjectStatu
 `
 
 const DELETE_PROJECT = gql`
-mutation deleteCustomer($id: ID!) {
-    deleteCustomer(id: $id) {
+mutation deleteProject($id: ID!) {
+    deleteProject(id: $id) {
         id
-        name
-        email
-        phone
     }
 }
 `;
 
-export {DELETE_PROJECT, ADD_PROJECT};
+//Note on the UPDATE_PROJECT the $status is referencing the enum NAME called ProjectStatusUpdate
+//referenced in the server directory schema.js file in the updateProject mutation schema. 
+const UPDATE_PROJECT = gql`
+mutation updateProject($id: ID!, $name: String!, $description: String!, $status: ProjectStatusUpdate!) {
+    updateProject(id: $id, name: $name, description: $description, 
+        status: $status) {
+            id
+            name
+            description
+            status
+            customer {
+                id
+                name
+                email
+                phone
+            }
+        }
+}
+`
+
+export {DELETE_PROJECT, ADD_PROJECT, UPDATE_PROJECT};

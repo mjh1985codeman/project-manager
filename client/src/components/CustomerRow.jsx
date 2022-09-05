@@ -3,21 +3,23 @@ import { FaTrash } from 'react-icons/fa';
 import { useMutation } from '@apollo/client';
 import { DELETE_CUSTOMER } from '../mutations/customerMutations';
 import { GET_CUSTOMERS } from '../queries/customerQueries';
+import { GET_PROJECTS } from '../queries/projectQueries';
 
 export default function ClientRow({ customer }) {
 
     //useMutation hook. 
     const [deleteCustomer] = useMutation(DELETE_CUSTOMER, {
         variables: { id: customer.id },
+        refetchQueries: [{ query: GET_CUSTOMERS }, { query: GET_PROJECTS }],
         //update the apollo cache to show the customer query again after 
         //the customer has been deleted.  
-        update(cache, { data: { deleteCustomer } }) {
-            const { customers } = cache.readQuery({ query: GET_CUSTOMERS });
-            cache.writeQuery({
-                query: GET_CUSTOMERS,
-                data: { customers: customers.filter(customer => customer.id !== deleteCustomer.id) }
-            })
-        }
+        // update(cache, { data: { deleteCustomer } }) {
+        //     const { customers } = cache.readQuery({ query: GET_CUSTOMERS });
+        //     cache.writeQuery({
+        //         query: GET_CUSTOMERS,
+        //         data: { customers: customers.filter(customer => customer.id !== deleteCustomer.id) }
+        //     })
+        // }
     })
 
     return (

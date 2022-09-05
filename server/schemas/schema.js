@@ -111,6 +111,14 @@ const RootMutation = new GraphQLObjectType({
                 id: {type: GraphQLNonNull(GraphQLID)},
             },
             resolve(parent, args) {
+                //logic to cascade delete the customer's associated project(s)
+                //so that the customer's project(s) are also deleted upon the customer
+                //being deleted. 
+                Project.find({customerId: args.id}).then((projects) => {
+                    projects.forEach(project => {
+                        project.remove();
+                    })
+                })
                 return Customer.findByIdAndRemove(args.id);
             },
         },
@@ -168,7 +176,7 @@ const RootMutation = new GraphQLObjectType({
                 status: {
                     type: new GraphQLEnumType({
                         //the name must be unique from one ENUM type to another.
-                        name: 'UpdateProjectStatus',
+                        name: 'ProjectStatusUpdate',
                         values: {
                             //the value is based on the Model.
                             'new': {value: 'Potential'},
